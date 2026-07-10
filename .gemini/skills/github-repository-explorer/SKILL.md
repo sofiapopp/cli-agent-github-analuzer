@@ -7,73 +7,43 @@ description: Authenticate with the GitHub REST API using a GitHub Personal Acces
 
 This skill establishes an authenticated connection to a remote GitHub repository using the GitHub REST API. Before performing any repository operations, verify that the user has a valid GitHub Personal Access Token (PAT) and that the repository is accessible.
 
+## Bundled Resources
+
+- `scripts/github_client.py` — GitHub API client handling authentication and requests.
+- `scripts/connect.py` — CLI entry point that verifies the PAT and confirms repository access.
+
+Always use these scripts rather than crafting raw HTTP requests manually.
+
 ## Workflow
 
 ### 1. Collect the required information
 
-Before making any GitHub API request:
+- Ask the user for a GitHub repository identifier (`owner/repository`) if not already provided.
+- Confirm that a `.env` file exists in the project root with a `GITHUB_TOKEN` set.
+  If missing, explain that a PAT can be created at:
+  `GitHub → Settings → Developer settings → Personal access tokens`
+  and should be placed in `.env` as `GITHUB_TOKEN=<token>` — never pasted into the chat.
 
-- Ask the user for a GitHub repository URL or an `owner/repository` identifier if it has not already been provided.
-- Check whether a GitHub Personal Access Token (PAT) has already been provided.
-- If no PAT is available, ask the user to generate one.
+### 2. Authenticate and connect to the repository
 
-Explain that a PAT can be created in:
+Run the connection script:
 
-`GitHub → Settings → Developer settings → Personal access tokens`
+    python scripts/connect.py --repo <owner>/<repository>
 
-Recommend creating a token with the minimum permissions required to read repository contents.
+The script reads `GITHUB_TOKEN` from a `.env` file in the project root, authenticates
+with the GitHub REST API, and verifies access to the specified repository.
 
-### 2. Authenticate with the GitHub REST API
+Never ask the token from the user directly into the conversation, log it, or display it — 
+the script reads it from `.env` on its own.
 
-Use the provided PAT to authenticate every GitHub API request.
+Interpret the script's output:
+- Output starting with `✅` — authentication and repository access succeeded. Proceed with subsequent operations.
+- Output starting with `❌ Помилка підключення` — the PAT is missing, invalid, expired, or the repository is inaccessible. Show the message to the user and ask them to check their `.env` / PAT before continuing.
+- Any other error — surface the message and stop the workflow.
 
-Include the following HTTP headers:
+Do not continue until the script reports success.
 
-```
-Authorization: Bearer <PAT>
-Accept: application/vnd.github+json
-X-GitHub-Api-Version: 2022-11-28
-```
-
-Never display, log, or permanently store the Personal Access Token.
-
-### 3. Validate the Personal Access Token
-
-Before accessing the repository, verify that the PAT is valid.
-
-Send an authenticated request to:
-
-```
-GET https://api.github.com/user
-```
-
-Interpret the response as follows:
-
-- HTTP 200 — authentication succeeded.
-- HTTP 401 — the PAT is invalid or expired. Ask the user to provide a valid token before continuing.
-- HTTP 403 — access is forbidden or the GitHub API rate limit has been reached. Explain the reason and stop the workflow.
-
-Do not continue unless authentication succeeds.
-
-### 4. Connect to the repository
-
-Extract the repository owner and repository name from the user input.
-
-Verify that the repository is accessible by sending an authenticated request to:
-
-```
-GET https://api.github.com/repos/{owner}/{repository}
-```
-
-Interpret the response as follows:
-
-- HTTP 200 — the repository exists and is accessible.
-- HTTP 404 — the repository does not exist or the authenticated user does not have permission to access it.
-- HTTP 403 — access is forbidden or rate limits have been exceeded.
-
-Continue only after successfully verifying repository access.
-
-### 5. Completion
+### 3. Completion
 
 When authentication and repository access have both been verified:
 
