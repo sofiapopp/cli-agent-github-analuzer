@@ -47,3 +47,15 @@ class GitHubClient:
         url = f'{self.base_url}/repos/{repo_full_name}/contents/{path}'
         return self._request('GET', url)
 
+    def get_repository_tree(self, repo_full_name, branch=None):
+    if branch is None:
+        repo_info = self._request('GET', f'{self.base_url}/repos/{repo_full_name}')
+        branch = repo_info.get('default_branch')
+
+    url = f'{self.base_url}/repos/{repo_full_name}/git/trees/{branch}'
+    data = self._request('GET', url, params={'recursive': '1'})
+
+    if data.get('truncated'):
+        pass  
+
+    return data

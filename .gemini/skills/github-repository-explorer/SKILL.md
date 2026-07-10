@@ -50,6 +50,25 @@ When authentication and repository access have both been verified:
 - Inform the user that the connection to the repository has been established successfully.
 - Confirm that the repository is ready for subsequent GitHub API operations.
 
+### 4. Retrieving repository structure
+
+Once the connection has been verified (see step 2), the agent can retrieve the
+full file/folder structure of the repository by running:
+
+    python scripts/explore_structure.py --repo <owner>/<repository>
+
+Optionally specify a branch:
+
+    python scripts/explore_structure.py --repo <owner>/<repository> --branch <branch-name>
+
+The script uses the GitHub Git Trees API to fetch the entire structure in a
+single request rather than crawling folders one by one, which avoids
+unnecessary API calls and rate-limit consumption.
+
+If the output includes a truncation warning, inform the user that the
+repository is too large for a complete listing in one request, and that
+only a partial structure is shown.
+
 ## Error Handling
 
 Handle the following situations gracefully:
