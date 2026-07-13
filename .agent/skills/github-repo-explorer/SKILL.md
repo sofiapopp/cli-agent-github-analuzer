@@ -177,8 +177,14 @@ Execute only the commands provided below first.
 
 ### Step 4 — Display the Repository Structure
 
-1. Format the stored tree as an indented directory structure — directories listed before files, sorted alphabetically within each level. Use standard ASCII characters (`|--`, `\--`) for drawing the tree to avoid console encoding issues.
+1. Display the repository structure in a tree-like format using ASCII characters (`|--`, `\--`) for drawing the tree to avoid 
+console encoding issues.
+   The tree is a presentation format only.
+   Do not generate custom tree-building algorithms, recursive data structures, nested hashtables, or helper scripts.
+   Use only the paths already returned by the GitHub API and format them for display.
+
 2. Print the formatted structure to the console.
+
 3. Additionally, output all files (`type: blob`) as a flat list of paths. This flat list is the input for any subsequent file-content retrieval tasks.
 
 ### Step 5 — Retrieve File Contents
@@ -234,3 +240,4 @@ If a file is not found (`404`):
 If any other request fails (`401`, `403`, `5xx`, or another unexpected error):
 - Inform the user of the reason for the failure.
 - Stop skill execution.
+
