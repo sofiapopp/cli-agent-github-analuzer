@@ -1,0 +1,38 @@
+{
+  "summary": "RR_PROJECT_BULATOVA_POPP is a Python package designed for automated statistical hypothesis testing and data visualization. The package dynamically selects parametric or non-parametric tests (T-Test, Wilcoxon, Mann-Whitney U, ANOVA, Alexander-Govern, Kruskal-Wallis) based on data characteristics (normality, variance homogeneity) and provides integrated visual diagnostics.",
+  "technologies": [
+    "Python",
+    "pandas",
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "seaborn",
+    "joypy",
+    "setuptools"
+  ],
+  "strengths": [
+    "Object-oriented structure using an abstract base class (StatisticalTest) to define a common interface.",
+    "Automated selection of statistical tests depending on distribution (normality) and variance properties.",
+    "Integrated visualization diagnostics (histograms with normal PDF overlays, Q-Q plots, joyplots, boxplots).",
+    "Thorough input checking inside class constructors (type verification, non-finite values, and size checks)."
+  ],
+  "issues": [
+    "Build and package metadata artifacts (build/ and RR_PROJECT_BULATOVA_POPP.egg-info/) are committed to the git repository.",
+    "Duplicate/outdated single-file implementation (build/lib/rr_project_bulatova_popp/module1.py) is committed.",
+    "Compatibility issue with modern SciPy versions where st.mode() returns ModeResult instead of a scalar value, breaking descriptive statistics representation.",
+    "Typographical spelling errors (e.g., 'not_lurge_length' in AnovaTestClass/IndependentTestClass and 'lenght' in PairedTestClass).",
+    "Hardcoded plt.show() calls within library classes block script/notebook execution and limit figure reuse.",
+    "Windows-specific paths in README examples ('..\\\\Datasets\\\\dataset_1.csv').",
+    "ANOVA variance checking defaults to False, bypassing automated homoscedasticity checks.",
+    "Independent t-test lacks an automated check for variance homogeneity to automatically choose between Student's T and Welch's T."
+  ],
+  "recommendations": [
+    "Add build/ and .egg-info/ directories to .gitignore and remove them from version control.",
+    "Remove the duplicate/redundant module1.py file.",
+    "Update st.mode(arr) to handle modern SciPy ModeResult objects correctly (e.g., extracting .mode[0]).",
+    "Correct spelling typos ('not_lurge_length' to 'not_large_length' and 'lenght' to 'length').",
+    "Refactor visualization methods to return Matplotlib Figure/Axes objects instead of calling plt.show() directly.",
+    "Implement automated variance checking in IndependentTtest to decide if equal_var should be True or False.",
+    "Improve path portability by using os.path or pathlib in examples and documentation."
+  ]
+}
